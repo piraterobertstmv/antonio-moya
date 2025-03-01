@@ -172,7 +172,7 @@ const experiences = [
 const testimonials = [
   {
     testimonial:
-      "I thought it was impossible to make a website as beautiful as our product, but Rick proved me wrong.",
+      "I thought it was impossible to make a website as beautiful as our product, but Antonio proved me wrong.",
     name: "Sara Lee",
     designation: "CFO",
     company: "Acme Co",
@@ -180,7 +180,7 @@ const testimonials = [
   },
   {
     testimonial:
-      "I've never met a web developer who truly cares about their clients' success like Rick does.",
+      "I've never met a web developer who truly cares about their clients' success like Antonio does.",
     name: "Chris Brown",
     designation: "COO",
     company: "DEF Corp",
@@ -188,7 +188,7 @@ const testimonials = [
   },
   {
     testimonial:
-      "After Rick optimized our website, our traffic increased by 50%. We can't thank them enough!",
+      "After Antonio optimized our website, our traffic increased by 50%. We can't thank him enough!",
     name: "Lisa Wang",
     designation: "CTO",
     company: "456 Enterprises",
@@ -207,7 +207,7 @@ const projects = [
         color: "blue-text-gradient",
       },
       {
-        name: "mongodb",
+        name: "lovable",
         color: "green-text-gradient",
       },
       {
@@ -216,7 +216,7 @@ const projects = [
       },
     ],
     image: carrent,
-    source_code_link: "https://github.com/",
+    source_code_link: "https://project-morent.vercel.app/",
   },
   {
     name: "Job IT",
@@ -260,6 +260,144 @@ const projects = [
     image: tripguide,
     source_code_link: "https://github.com/",
   },
+  {
+    name: "Vaultiss",
+    description:
+      "A new era of Real Estate investment, with a new way to invest in Real Estate. Join the revolution and start investing in Real Estate today.",
+    tags: [
+      {
+        name: "react",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "openai",
+        color: "green-text-gradient",
+      },
+      {
+        name: "firebase",
+        color: "pink-text-gradient",
+      },
+    ],
+    image: "/src/assets/vaultiss.png",
+    source_code_link: "https://vaultiss.com/",
+  },
+  {
+    name: "FastVoice",
+    description:
+      "Generate Stripe invoices, forget about constant fees and start making real profits.",
+    tags: [
+      {
+        name: "nextjs",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "supabase",
+        color: "green-text-gradient",
+      },
+      {
+        name: "stripe",
+        color: "purple-text-gradient",
+      },
+    ],
+    image: "/src/assets/fastvoice.png",
+    source_code_link: "https://fastvoice.online/",
+  },
+  {
+    name: "Dexview",
+    description:
+      "A dex screener built for myself, to help me find the best dex on the crypto market.",
+    tags: [
+      {
+        name: "react-native",
+        color: "purple-text-gradient",
+      },
+      {
+        name: "nodejs",
+        color: "green-text-gradient",
+      },
+      {
+        name: "supabase",
+        color: "pink-text-gradient",
+      },
+    ],
+    image: "/src/assets/dexscreener.png",
+    source_code_link: "https://dexview.netlify.app/",
+  },
+  {
+    name: "Luc-ia",
+    description:
+      "The first ever AI-powered chatbot for inbound and outbound calls.",
+    tags: [
+      {
+        name: "react-native",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "nodejs",
+        color: "green-text-gradient",
+      },
+      {
+        name: "supabase",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "elevenlabs",
+        color: "red-text-gradient",
+      },
+    ],
+    image: "/src/assets/lucia.png",
+    source_code_link: "https://luc-ia.fun/",
+  },
+  {
+    name: "MarketMood",
+    description:
+      "A unique approach to the trading experience, with a new way to trade. Find out how does the market feel, before you make a move.",
+    tags: [
+      {
+        name: "react-native",
+        color: "yellow-text-gradient",
+      },
+      {
+        name: "nodejs",
+        color: "green-text-gradient",
+      },
+      {
+        name: "supabase",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "newsAPI",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "coingecko",
+        color: "green-text-gradient",
+      },
+    ],
+    image: "/src/assets/marketmood.png",
+    source_code_link: "https://marketfeeling.netlify.app/",
+  },
+  {
+    name: "H^CKER NEWS",
+    description:
+      "Fresh news from the world of technology, with a new way to get the latest news. Matrix Edition",
+    tags: [
+      {
+        name: "react-native",
+        color: "yellow-text-gradient",
+      },
+      {
+        name: "nodejs",
+        color: "green-text-gradient",
+      },
+      {
+        name: "supabase",
+        color: "blue-text-gradient",
+      }
+    ],
+    image: "/src/assets/hacker.png",
+    source_code_link: "https://hckernews.netlify.app/",
+  }
 ];
 
 export { services, technologies, experiences, testimonials, projects };
