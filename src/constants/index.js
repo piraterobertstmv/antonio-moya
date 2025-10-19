@@ -22,6 +22,12 @@ import {
   carrent,
   jobit,
   tripguide,
+  vaultiss,
+  fastvoice,
+  dexscreener,
+  lucia,
+  marketmood,
+  hacker,
   threejs,
 } from "../assets";
 
@@ -278,7 +284,7 @@ const projects = [
         color: "pink-text-gradient",
       },
     ],
-    image: "/src/assets/vaultiss.png",
+    image: vaultiss,
     source_code_link: "https://vaultiss.com/",
   },
   {
@@ -299,7 +305,7 @@ const projects = [
         color: "purple-text-gradient",
       },
     ],
-    image: "/src/assets/fastvoice.png",
+    image: fastvoice,
     source_code_link: "https://fastvoice.online/",
   },
   {
@@ -320,7 +326,7 @@ const projects = [
         color: "pink-text-gradient",
       },
     ],
-    image: "/src/assets/dexscreener.png",
+    image: dexscreener,
     source_code_link: "https://dexview.netlify.app/",
   },
   {
@@ -345,7 +351,7 @@ const projects = [
         color: "red-text-gradient",
       },
     ],
-    image: "/src/assets/lucia.png",
+    image: lucia,
     source_code_link: "https://luc-ia.fun/",
   },
   {
@@ -374,7 +380,7 @@ const projects = [
         color: "green-text-gradient",
       },
     ],
-    image: "/src/assets/marketmood.png",
+    image: marketmood,
     source_code_link: "https://marketfeeling.netlify.app/",
   },
   {
@@ -395,7 +401,7 @@ const projects = [
         color: "blue-text-gradient",
       }
     ],
-    image: "/src/assets/hacker.png",
+    image: hacker,
     source_code_link: "https://hckernews.netlify.app/",
   }
 ];

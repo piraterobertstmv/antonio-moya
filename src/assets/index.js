@@ -29,6 +29,12 @@ import tesla from "./company/tesla.png";
 import carrent from "./carrent.png";
 import jobit from "./jobit.png";
 import tripguide from "./tripguide.png";
+import vaultiss from "./vaultiss.png";
+import fastvoice from "./fastvoice.png";
+import dexscreener from "./dexscreener.png";
+import lucia from "./lucia.png";
+import marketmood from "./marketmood.png";
+import hacker from "./hacker.png";
 
 export {
   logo,
@@ -59,4 +65,10 @@ export {
   carrent,
   jobit,
   tripguide,
+  vaultiss,
+  fastvoice,
+  dexscreener,
+  lucia,
+  marketmood,
+  hacker,
 };
