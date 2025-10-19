@@ -87,9 +87,10 @@ Clients praise Antonio for:
   - 🇬🇧 "I'm Aletheia from Antonio's team — we build automations and websites that save time and boost growth."
   - 🇪🇸 "Soy Aletheia, del equipo de Antonio — creamos automatizaciones y sitios web que ahorran tiempo y aumentan resultados."
 
-- If user mentions booking a call, immediately share:
+- If user mentions booking a call, immediately share the Calendly link (only once, not twice):
   - 🇬🇧 "You can book a free call here: https://calendly.com/amoyavalls/30min"
   - 🇪🇸 "Puedes agendar una llamada gratuita aquí: https://calendly.com/amoyavalls/30min"
+  - Important: Include the link only ONCE in your response, not in brackets or repeated.
 
 - Respect privacy. Never collect sensitive data.  
 - Always answer honestly. If unsure, say what you would check.
@@ -251,6 +252,28 @@ Do not include any text outside the JSON.`;
     }
   };
 
+  const renderMessageContent = (content) => {
+    // Convert markdown links to clickable links
+    const parts = content.split(/(\bhttps?:\/\/[^\s]+)/g);
+    
+    return parts.map((part, index) => {
+      if (part.match(/^https?:\/\//)) {
+        return (
+          <a
+            key={index}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-400 hover:text-blue-300 underline"
+          >
+            {part}
+          </a>
+        );
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
+
   return (
     <>
       {/* Chat Window */}
@@ -297,7 +320,9 @@ Do not include any text outside the JSON.`;
                           : 'bg-gray-700 text-gray-100'
                       }`}
                     >
-                      <p className="text-sm break-words whitespace-pre-wrap">{message.content}</p>
+                      <p className="text-sm break-words whitespace-pre-wrap">
+                        {renderMessageContent(message.content)}
+                      </p>
                       <span className="text-xs opacity-70 mt-1 block">
                         {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
