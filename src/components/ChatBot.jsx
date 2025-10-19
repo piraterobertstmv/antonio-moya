@@ -5,9 +5,10 @@ const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
-      role: 'bot',
-      content: 'Hi! How can I help you today?',
-      timestamp: new Date()
+      role: 'assistant',
+      content: 'Hi! I\'m Aletheia, Antonio\'s AI assistant. How can I help you today?',
+      timestamp: new Date(),
+      suggestions: []
     }
   ]);
   const [inputMessage, setInputMessage] = useState('');
@@ -15,7 +16,117 @@ const ChatBot = () => {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  const WEBHOOK_URL = 'https://hook.eu2.make.com/3rtq8avpgdlg4zj1g32puv2t4cygkhwj';
+  const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+
+  const SYSTEM_PROMPT = `You are "Aletheia," Antonio's AI assistant.
+
+Your job is to have friendly, helpful, bilingual conversations (English or Spanish, depending on how the user writes).  
+Use a casual, concise tone — like two friends texting. Never over-explain; keep paragraphs short and simple (grade-3 reading level).  
+If the user writes in Spanish, reply completely in Spanish. If they write in English, reply completely in English.
+
+---
+
+# ABOUT ANTONIO
+
+Antonio is a skilled software developer and automation builder with deep experience in TypeScript, JavaScript, React, Node.js, and Three.js.  
+He creates **AI automations, user interfaces, and full web applications** that solve real business problems.  
+He collaborates closely with clients to design **efficient, scalable, and user-friendly solutions**.
+
+His website sections include:
+- **About** – professional overview and introduction.  
+- **Work** – portfolio of projects.  
+- **Contact** – form to reach out.  
+
+---
+
+# SERVICES OFFERED
+
+## 1. AI Automations
+- Chatbots and assistants for Instagram, websites, or booking flows.  
+- Automations for lead generation, invoice generation (e.g., FastVoice), and CRM updates.  
+- Integrations using **Make.com**, **Typebot**, **Manychat**, **Google Sheets**, **Airtable**, **HubSpot**, **Pipedrive**, **Calendly**, **Slack**, and **Gmail**.
+
+## 2. Web Development
+- Frontend: React, Next.js, React Native, Framer.  
+- Backend: Node.js, Supabase, Firebase, Stripe integrations.  
+- Design: clean, conversion-focused interfaces.  
+- Website creation, optimization, and full-stack solutions.
+
+---
+
+# PORTFOLIO HIGHLIGHTS
+
+Antonio's projects demonstrate creativity, real-world problem-solving, and cross-tech integration:
+
+- **Car Rent** – car-rental booking platform.  
+- **Job IT** – job-search app with salary estimates and geolocation.  
+- **Trip Guide** – travel booking platform (flights, hotels, cars).  
+- **Vaultiss** – blockchain-based real-estate investment platform.  
+- **FastVoice** – Stripe invoice automation.  
+- **Dexview** – crypto DEX screener.  
+- **Luc-ia** – AI-powered voice chatbot for inbound/outbound calls.  
+- **MarketMood** – market-sentiment analysis app.  
+- **H^CKER NEWS** – tech-news reader in a Matrix-style design.
+
+---
+
+# TESTIMONIALS (summarized)
+
+Clients praise Antonio for:
+- Designing **beautiful, modern websites** that match their products.
+- Caring deeply about client success.
+- Delivering measurable improvements (e.g., +50 % website traffic after optimization).
+
+---
+
+# COMMUNICATION GUIDELINES
+
+- Be friendly and curious; no emojis, no "Hey there!".  
+- Only ask **one question at a time**.  
+- Never repeat the same question.  
+- Detect language automatically (English ↔ Spanish).  
+- If asked "Who is this?", respond:
+  - 🇬🇧 "I'm Aletheia from Antonio's team — we build automations and websites that save time and boost growth."
+  - 🇪🇸 "Soy Aletheia, del equipo de Antonio — creamos automatizaciones y sitios web que ahorran tiempo y aumentan resultados."
+
+- If user mentions booking a call, immediately share:
+  - 🇬🇧 "You can book a free call here: https://calendly.com/antonio-moya/meeting"
+  - 🇪🇸 "Puedes agendar una llamada gratuita aquí: https://calendly.com/antonio-moya/meeting"
+
+- Respect privacy. Never collect sensitive data.  
+- Always answer honestly. If unsure, say what you would check.
+
+---
+
+# CONVERSATION FLOW
+
+When starting a chat or answering questions, adapt this order naturally:
+
+1. 🇬🇧 "Are you more interested in automations or web design?"  
+   🇪🇸 "¿Te interesa más la automatización o el diseño web?"
+
+2. Ask about their business or context once they reply:  
+   🇬🇧 "What kind of business or project are you working on?"  
+   🇪🇸 "¿Qué tipo de negocio o proyecto tienes?"
+
+3. Explain clearly **how Antonio's solutions could help**.  
+   Offer practical examples and realistic timeframes (usually 1-4 weeks).  
+
+4. If they seem ready, offer the booking link.
+
+---
+
+# OUTPUT FORMAT (strict JSON)
+
+Always respond **only** with a JSON object in this structure:
+
+{
+  "reply": "string — main assistant reply in the user's language (markdown allowed)",
+  "suggestions": ["string", "string", "string"],  // 0–4 short suggested follow-up messages
+  "topic": "string — one or two words summarizing the subject (e.g., automations, web design, pricing)"
+}
+
+Do not include any text outside the JSON.`;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -40,48 +151,100 @@ const ChatBot = () => {
     
     if (!inputMessage.trim() || isLoading) return;
 
+    if (!OPENAI_API_KEY) {
+      const errorMessage = {
+        role: 'assistant',
+        content: 'API key not configured. Please add your OpenAI API key to the .env file.',
+        timestamp: new Date(),
+        suggestions: []
+      };
+      setMessages(prev => [...prev, errorMessage]);
+      return;
+    }
+
     const userMessage = {
       role: 'user',
       content: inputMessage,
-      timestamp: new Date()
+      timestamp: new Date(),
+      suggestions: []
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = inputMessage;
     setInputMessage('');
     setIsLoading(true);
 
     try {
-      const response = await fetch(WEBHOOK_URL, {
+      // Prepare conversation history for OpenAI
+      const conversationHistory = [
+        {
+          role: 'system',
+          content: SYSTEM_PROMPT
+        },
+        ...messages
+          .filter(msg => msg.role === 'user' || msg.role === 'assistant')
+          .map(msg => ({
+            role: msg.role,
+            content: msg.content
+          })),
+        {
+          role: 'user',
+          content: currentInput
+        }
+      ];
+
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${OPENAI_API_KEY}`
         },
         body: JSON.stringify({
-          message: inputMessage,
-          timestamp: new Date().toISOString()
+          model: 'gpt-4o-mini',
+          messages: conversationHistory,
+          temperature: 0.7,
+          max_tokens: 800
         })
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        
-        const botMessage = {
-          role: 'bot',
-          content: data.response || data.message || 'Message received!',
-          timestamp: new Date()
-        };
-        
-        setMessages(prev => [...prev, botMessage]);
-      } else {
-        throw new Error('Failed to send message');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || 'Failed to get response from ChatGPT');
       }
+
+      const data = await response.json();
+      const assistantMessage = data.choices[0].message.content;
+      
+      // Parse JSON response
+      let parsedResponse;
+      try {
+        parsedResponse = JSON.parse(assistantMessage);
+      } catch (parseError) {
+        // If JSON parsing fails, use the raw message
+        parsedResponse = {
+          reply: assistantMessage,
+          suggestions: [],
+          topic: 'general'
+        };
+      }
+      
+      const botMessage = {
+        role: 'assistant',
+        content: parsedResponse.reply || assistantMessage,
+        timestamp: new Date(),
+        suggestions: parsedResponse.suggestions || [],
+        topic: parsedResponse.topic
+      };
+      
+      setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.error('Error sending message:', error);
       
       const errorMessage = {
-        role: 'bot',
-        content: 'Sorry, I encountered an error. Please try again later.',
-        timestamp: new Date()
+        role: 'assistant',
+        content: 'Sorry, I encountered an error. Please check your API key and try again.',
+        timestamp: new Date(),
+        suggestions: []
       };
       
       setMessages(prev => [...prev, errorMessage]);
@@ -94,6 +257,13 @@ const ChatBot = () => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage(e);
+    }
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setInputMessage(suggestion);
+    if (inputRef.current) {
+      inputRef.current.focus();
     }
   };
 
@@ -134,22 +304,36 @@ const ChatBot = () => {
             {/* Messages Area */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#0f0f1e]">
               {messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-[75%] px-4 py-2 rounded-2xl ${
-                      message.role === 'user'
-                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
-                        : 'bg-gray-700 text-gray-100'
-                    }`}
-                  >
-                    <p className="text-sm break-words">{message.content}</p>
-                    <span className="text-xs opacity-70 mt-1 block">
-                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
+                <div key={index} className="space-y-2">
+                  <div className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div
+                      className={`max-w-[75%] px-4 py-2 rounded-2xl ${
+                        message.role === 'user'
+                          ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
+                          : 'bg-gray-700 text-gray-100'
+                      }`}
+                    >
+                      <p className="text-sm break-words whitespace-pre-wrap">{message.content}</p>
+                      <span className="text-xs opacity-70 mt-1 block">
+                        {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
                   </div>
+                  
+                  {/* Suggestions */}
+                  {message.role === 'assistant' && message.suggestions && message.suggestions.length > 0 && index === messages.length - 1 && !isLoading && (
+                    <div className="flex flex-wrap gap-2 ml-2">
+                      {message.suggestions.map((suggestion, suggestionIndex) => (
+                        <button
+                          key={suggestionIndex}
+                          onClick={() => handleSuggestionClick(suggestion)}
+                          className="px-3 py-1.5 text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-full transition-colors border border-gray-600"
+                        >
+                          {suggestion}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
               
