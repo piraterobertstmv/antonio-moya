@@ -16,8 +16,6 @@ const ChatBot = () => {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
-
   const SYSTEM_PROMPT = `You are "Aletheia," Antonio's AI assistant.
 
 Your job is to have friendly, helpful, bilingual conversations (English or Spanish, depending on how the user writes).  
@@ -151,17 +149,6 @@ Do not include any text outside the JSON.`;
     
     if (!inputMessage.trim() || isLoading) return;
 
-    if (!OPENAI_API_KEY) {
-      const errorMessage = {
-        role: 'assistant',
-        content: 'API key not configured. Please add your OpenAI API key to the .env file.',
-        timestamp: new Date(),
-        suggestions: []
-      };
-      setMessages(prev => [...prev, errorMessage]);
-      return;
-    }
-
     const userMessage = {
       role: 'user',
       content: inputMessage,
@@ -193,23 +180,20 @@ Do not include any text outside the JSON.`;
         }
       ];
 
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      // Call our secure serverless API
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${OPENAI_API_KEY}`
         },
         body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: conversationHistory,
-          temperature: 0.7,
-          max_tokens: 800
+          messages: conversationHistory
         })
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error?.message || 'Failed to get response from ChatGPT');
+        throw new Error(errorData.error || 'Failed to get response from ChatGPT');
       }
 
       const data = await response.json();
